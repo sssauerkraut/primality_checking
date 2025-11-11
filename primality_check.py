@@ -75,7 +75,7 @@ def solovay_strassen_test(n, k = 5):
         
         r = pow(a , (n - 1) // 2, n)
         if r != 1 and r != n - 1 :
-            return False, [(a, f"{a}^(({n}-1)/2) mod {n} = {r} ≠ 1 и ≠ {n-1}")]
+            return False, [(a, f"{a}^(({n}-1)/2) mod {n} = {r} != 1 и != {n-1}")]
         
         s = jacobi(a, n)
         if r % n != s % n:
@@ -94,7 +94,7 @@ def miller_rabin_test(n, k = 5):
     r = n - 1
     s = 0
     while r % 2 == 0:
-        r //= 1
+        r //= 2
         s += 1
     
     bases = []
@@ -113,11 +113,53 @@ def miller_rabin_test(n, k = 5):
             while j <= s - 1 and y != n - 1:
                 y = pow(y, 2, n)
                 if y == 1:
-                    return False, [(a, "Найдено нетривиальное условие x^2 ≡ 1 mod n")]
+                    return False, [(a, f"({y} == 1)\n Найдено нетривиальное условие x^2 ≡ 1 mod n")]
                 j += 1
             if y != n - 1:
-                return False, [(a, f"Для основания {a} не выполнено условие простоты")]
+                return False, [(a, f"({y} != {n} - 1)\n Для основания {a} не выполнено условие простоты")]
         witnesses.append(a)
             
     return True, witnesses[:5]
+
+def test_number(n, tests):
+    print(f"\n{'='*80}")
+    print(f"Тестирование числа: {n}")
+    print(f"{'='*80}")
     
+    for test_name, test_func in tests:
+        print(f"\n{test_name}:")
+        is_prime, result = test_func(n)
+        
+        if is_prime:
+            print(f"  Результат: ВЕРОЯТНО ПРОСТОЕ")
+            if result:
+                print(f"  Основания, для которых условие выполняется:")
+            for res in result:
+               print(res) 
+        else:
+            print(f"  Результат: СОСТАВНОЕ")
+            if result:
+                for base, reason in result:
+                    print(f"  Основание {base}:\n {reason}")
+
+def main():
+    test_numbers = [
+        10916259974261909357,
+        1383434740412807861696983683174821678173,
+        424088352378481695681888248117998379567,
+        66362118570275412275709433316356439068361677029889085093867106069737267959541693
+    ]
+
+    tests = [
+        ("Тест Ферма", ferma_test),
+        ("Тест Соловэя-Штрассена", solovay_strassen_test),
+        ("Тест Миллера-Рабина", miller_rabin_test)
+    ]
+
+    print("ПРОВЕРКА ЧИСЕЛ НА ПРОСТОТУ")
+    for number in test_numbers:
+        test_number(number, tests)
+
+
+if __name__ == "__main__":
+    main()
