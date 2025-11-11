@@ -2,8 +2,32 @@ import random
 import math
 from math import gcd
 
-def jacobi(a , b):
-    if (a == 1): return 1
+def jacobi(a , n):
+    g = 1
+    while True:
+        if a == 0: return 0
+        if a == 1: return g
+
+        a_1 = a
+        k = 0
+        while a_1 % 2 == 0:
+                a_1 //= 2
+                k += 1
+
+        if k % 2 == 0:
+            s = 1
+        else: 
+            if n % 8 == 7 or n % 8 == 1: #n ≢ ±1 (mod 8)
+                s = 1
+            elif n % 8 == 5 or n % 8 == 3: #n ≢ ±3 (mod 8)
+                s = -1
+        
+        if a_1 == 1: return g * s
+
+        if n % 4 == 3 and a_1 % 4 == 3: s = -s #n ≢ 3 (mod 4) a1 ≢ 3 (mod 4)
+        a = n % a_1
+        n = a_1
+        g = g*s
 
 def ferma_test(n, k = 5):
     if n < 5:
